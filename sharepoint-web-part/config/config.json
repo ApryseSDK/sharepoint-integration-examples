@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "webviewer-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/webviewer/WebviewerWebPart.js",
+          "manifest": "./src/webparts/webviewer/WebviewerWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "WebviewerWebPartStrings": "lib/webparts/webviewer/loc/{locale}.js",
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "version": "1.15.0",
+    "libraryName": "webviewer",
+    "libraryId": "747908ae-a526-4a2e-b88d-91a6c7422e70",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "webviewer",
+    "solutionShortDescription": "webviewer description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}
