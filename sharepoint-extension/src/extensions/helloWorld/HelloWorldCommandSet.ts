@@ -8,7 +8,9 @@ import {
   IListViewCommandSetExecuteEventParameters
 } from '@microsoft/sp-listview-extensibility';
 
-const pdftronUrl = 'http://localhost:3000';
+// These variables should be configured by the user's site
+const sharepointSiteUrl = 'https://5s4vrg.sharepoint.com/sites/5s4vrg';
+const sitePage = `Webviewer.aspx`;
 
 /**
  * If your command set uses the ClientSideComponentProperties JSON input,
@@ -53,15 +55,12 @@ export default class HelloWorldCommandSet extends BaseListViewCommandSet<IHelloW
     switch (event.itemId) {
       case 'OPEN_IN_PDFTRON':
         axios.get(spItemUrl).then(({data}) => {
-          console.log(data);
-          console.log(this.context.pageContext.web);
           const downloadUrl = data['@content.downloadUrl'];
           const url = new URL(downloadUrl);
-const urlParams =  new URLSearchParams(url.search);
+          const urlParams =  new URLSearchParams(url.search);
           const uniqueId = urlParams.get('UniqueId');
           const tempAuth = urlParams.get('tempauth');
-          window.open(`https://5s4vrg.sharepoint.com/sites/5s4vrg/SitePages/Webviewer.aspx?filename=${fileName}&foldername=${folderName}&username=${displayName}&email=${email}&uniqueId=${uniqueId}&tempAuth=${tempAuth}`);
-          // window.open(`http://localhost:3000?filename=${fileName}&foldername=${folederName}&username=${displayName}&email=${email}&uniqueId=${uniqueId}&tempAuth=${tempAuth}`);
+          window.open(`${sharepointSiteUrl}/SitePages/${sitePage}?filename=${fileName}&foldername=${folderName}&username=${displayName}&email=${email}&uniqueId=${uniqueId}&tempAuth=${tempAuth}`);
         });
         break;
       default:

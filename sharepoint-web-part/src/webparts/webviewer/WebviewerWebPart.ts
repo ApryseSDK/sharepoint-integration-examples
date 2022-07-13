@@ -48,10 +48,8 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
         const newPathnameArray: string[] = window.location.pathname.split('/').slice(0, 3);
         const newPathname: string = newPathnameArray.join('/');
         const domain: string = window.location.origin;
-        console.log(`${domain}/${newPathname}`)
         const domainUrl: string = `${domain}${newPathname}`;
         const docUrl: string = `${domainUrl}/_layouts/15/download.aspx?UniqueId=${uniqueId}&Translate=false&tempauth=${tempAuth}&ApiVersion=2.0`;
-        console.log(domainUrl);
         instance.UI.loadDocument(docUrl, {filename});
       } else {
         alert('Please open the webviewer with proper document queries.')
