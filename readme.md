@@ -1,11 +1,11 @@
-# sharepoint-extension#
+# SharePoint-extension#
 - change the `sharepointSiteUrl` to the your sharepoint site url, ex: https://5s4vrg.sharepoint.com/sites/5s4vrg
 - change the `page` to your SharePoint page that has webviewer
 - run `gulp serve` and enable debug script.
 
 
-# sharepoint-web-part#
-## developing web part
+# SharePoint-web-part#
+## Developing web part
 - follow the guide on PDFTron website to map a network drive to the sharepoint master page gallery.
 - Create a folder called `pdftron` in the mapped network drive, move the 'lib' folder, which contains `ui` and `core` folders, to the `pdftron` folder.
 - Change the `path` in Webviewer options to `'/_catalogs/masterpage/pdftron/lib'`.
