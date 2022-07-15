@@ -33,10 +33,13 @@ Since MacOS users aren't available to map the their network drive to the SharePo
 
 To enable custom page in Sharepoint, start with connecting to the SharePoint Online Management Shell:
 - On Windows, you can use powershell.
-- On Mac, you can use PnP powershell.
-
 Use `Connect-SPOService -Url https://{your-tenant-id}-admin.sharepoint.com`.
 Then use `Set-SPOsite https://{your-tenant-id}/sites/{site-name} -DenyAddAndCustomizePages 0` to enable customize pages.
+
+- On Mac, you can use PnP powershell.
+Install Pnp powershell: https://www.c-sharpcorner.com/article/how-to-run-pnp-powershell-in-macos/
+After installation, use `Connect-PnPOnlin -Url https://{your-tenant-id}-admin.sharepoint.com -Interactive` to login.
+Then use `Set-PnPSite -Identity https://{your-tenant-id}.sharepoint.com/sites/${site-name} -NoScriptSite $false` to enable custom script in SharePoint.
 
 After configuring, upload the sharepoint-static to the document library. Navigate into the sharepoint-static folder in SharePoint, and click the index.aspx. This should open a web page that contains webviewer.
 
