@@ -60,7 +60,12 @@ export default class HelloWorldCommandSet extends BaseListViewCommandSet<IHelloW
           const urlParams =  new URLSearchParams(url.search);
           const uniqueId = urlParams.get('UniqueId');
           const tempAuth = urlParams.get('tempauth');
-          window.open(`${sharepointSiteUrl}/SitePages/${sitePage}?filename=${fileName}&foldername=${folderName}&username=${displayName}&email=${email}&uniqueId=${uniqueId}&tempAuth=${tempAuth}`);
+          // window.open(`${sharepointSiteUrl}/SitePages/${sitePage}?filename=${fileName}&foldername=${folderName}&username=${displayName}&email=${email}&uniqueId=${uniqueId}&tempAuth=${tempAuth}`);
+          
+          // If you're using sharepoint-static, just copy the URL of your page and put into the following
+
+          let staticPageUrl = `https://5s4vrg.sharepoint.com/sites/5s4vrg/Shared%20Documents/test-site/sharepoint-static/index.aspx`;
+          window.open(`${staticPageUrl}?filename=${fileName}&foldername=${folderName}&username=${displayName}&email=${email}&uniqueId=${uniqueId}&tempAuth=${tempAuth}`);
         });
         break;
       default:
