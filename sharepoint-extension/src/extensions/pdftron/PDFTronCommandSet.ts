@@ -17,19 +17,19 @@ const sitePage = `Webviewer.aspx`;
  * it will be deserialized into the BaseExtension.properties object.
  * You can define an interface to describe it.
  */
-export interface IHelloWorldCommandSetProperties {
+export interface IPDFTronCommandSetProperties {
   // This is an example; replace with your own properties
   sampleTextOne: string;
   sampleTextTwo: string;
 }
 
-const LOG_SOURCE: string = 'HelloWorldCommandSet';
+const LOG_SOURCE: string = 'PDFTronCommandSet';
 
-export default class HelloWorldCommandSet extends BaseListViewCommandSet<IHelloWorldCommandSetProperties> {
+export default class PDFTronCommandSet extends BaseListViewCommandSet<IPDFTronCommandSetProperties> {
 
   @override
   public onInit(): Promise<void> {
-    Log.info(LOG_SOURCE, 'Initialized HelloWorldCommandSet');
+    Log.info(LOG_SOURCE, 'Initialized PDFTronCommandSet');
     Log.info('absolute_url', this.context.pageContext.web.toString());
     return Promise.resolve();
   }

@@ -5,14 +5,14 @@
     "hello-world-command-set": {
       "components": [
         {
-          "entrypoint": "./lib/extensions/helloWorld/HelloWorldCommandSet.js",
-          "manifest": "./src/extensions/helloWorld/HelloWorldCommandSet.manifest.json"
+          "entrypoint": "./lib/extensions/pdftron/PDFTronCommandSet.js",
+          "manifest": "./src/extensions/pdftron/PDFTronCommandSet.manifest.json"
         }
       ]
     }
   },
   "externals": {},
   "localizedResources": {
-    "HelloWorldCommandSetStrings": "lib/extensions/helloWorld/loc/{locale}.js"
+    "PDFTronCommandSetStrings": "lib/extensions/pdftron/loc/{locale}.js"
   }
 }
