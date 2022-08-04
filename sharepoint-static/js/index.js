@@ -1,5 +1,4 @@
 console.log('instantiating webviewer');
-let i;
 
 function validateQueryParam(urlParams) {
     const necessaryParams = ['uniqueId', 'tempAuth', 'filename'];
@@ -18,7 +17,6 @@ WebViewer({
     uiPath: './ui/index.aspx' // make sure to indicate index.aspx instead of index.html, otherwise the UI won't be loaded
   }, document.getElementById('viewer'))
   .then(instance => {
-    i = instance;
     createSaveFileButton(instance);
     createSavedModal(instance);
     const urlParams = new URLSearchParams(window.location.search);
