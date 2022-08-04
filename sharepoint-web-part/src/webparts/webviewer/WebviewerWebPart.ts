@@ -35,8 +35,10 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
     this.domElement.style.height = '1000px';
 
     WebViewer({
-      // path: '/_catalogs/masterpage/pdftron/lib',
-      path: 'https://5s4vrg.sharepoint.com/sites/5s4vrg/Shared Documents/test-site/sharepoint-static/js/lib',
+      // We suggest to use the method of uploading static files to the Documents folder in your sharepoint site
+      // The provided path below is a template, it may varies in your site
+      path: 'https://<your-tenant-id>.sharepoint.com/sites/<your-site-name>/Shared Documents/<your-static-files-path>',
+      // You'll need to indicate the entry point of webviewer ui. In sharepoint, it will be with .aspx extension.
       uiPath: './ui/index.aspx',
     }, this.domElement)
     .then(instance => {
@@ -58,7 +60,7 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
         alert('Please open the webviewer with proper document queries.')
       }
     })
-    .catch(err => console.log(err));
+    .catch(err => console.error(err));
   }
 
   private _createSaveFileButton(instance: WebViewerInstance): void {
@@ -83,9 +85,13 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
     })
   }
 
+  /* 
+    The purpose of this function is to get the request digest (client-side token) for us to go through the authorization
+    when uploading the file.
+  */
   private async _getFormDigestValue(): Promise<string> {
     try {
-      const resp: Response = await fetch(`${window.location.origin}/sites/5s4vrg/_api/contextinfo`, {
+      const resp: Response = await fetch(`${window.location.origin}/sites/<your-site-name>/_api/contextinfo`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json; odata=verbose'
@@ -116,7 +122,7 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
     const file: File = new File([fileArray], fileName, {
       type: 'application/pdf'
     });
-    await fetch(`${window.location.origin}/sites/5s4vrg/_api/web/GetFolderByServerRelativeUrl('${folderUrl}')/Files/add(url='${fileName}', overwrite=true)`, {
+    await fetch(`${window.location.origin}/sites/<your-site-name>/_api/web/GetFolderByServerRelativeUrl('${folderUrl}')/Files/add(url='${fileName}', overwrite=true)`, {
       method: 'POST',
       body: file,
       headers: {
