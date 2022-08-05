@@ -1,5 +1,5 @@
 # SharePoint-extension
-- change the `sharepointSiteUrl` to the your sharepoint site url, ex: https://5s4vrg.sharepoint.com/sites/5s4vrg
+- change the `sharepointSiteUrl` to the your sharepoint site url, ex: https://{your-tenant-id}.sharepoint.com/sites/{site-name}
 - change the `page` to your SharePoint page that has webviewer
 - run `gulp serve` and enable debug script.
 
@@ -10,7 +10,6 @@ Login to the SharePoint admin center, and navigate to __Manage Apss__ page, then
 In your SharePoint site, add the extension by clicking the setting button on top right and click "Add an app". Select the extension app you just enabled.
 Go back to the document library, and it should show *Open in PDFTron* option when you right click a document.
 After clicking, it will redirect to the page specified, whether it's page that contains webviewer web part or a static page with webviewer.
-
 
 # SharePoint-web-part
 ## Developing web part
@@ -29,7 +28,7 @@ Before deploying the app, we need to bundle it and create a solution package.
 - Create a page and add the web part to the page.
 
 # Alternative: Using webviewer with SharePoint in document library
-Since MacOS users aren't available to map the their network drive to the SharePoint Master page gallery, it is possible to integrate Weviewer with Sharepoint using the document library. 
+If you aren't available to map the your network drive to the SharePoint Master page gallery, it is possible to integrate Weviewer with Sharepoint using the document library. The web part could also use the static assets that are stored in the document library.
 
 To enable custom page in Sharepoint, start with connecting to the SharePoint Online Management Shell:
 - On Windows, you can use powershell.
