@@ -6,7 +6,8 @@
   "scripts": {
     "build": "gulp bundle",
     "clean": "gulp clean",
-    "test": "gulp test"
+    "test": "gulp test",
+    "start:dev": "npm i"
   },
   "dependencies": {
     "@microsoft/sp-core-library": "1.15.0",
@@ -15,17 +16,19 @@
     "@microsoft/sp-property-pane": "1.15.0",
     "@microsoft/sp-webpart-base": "1.15.0",
     "@pdftron/webviewer": "^8.7.0",
+    "dotenv": "^16.0.1",
+    "dotenv-expand": "^8.0.3",
     "tslib": "2.3.1"
   },
   "devDependencies": {
-    "@microsoft/rush-stack-compiler-4.5": "0.2.2",
-    "@rushstack/eslint-config": "2.5.1",
-    "@microsoft/eslint-plugin-spfx": "1.15.2",
     "@microsoft/eslint-config-spfx": "1.15.0",
+    "@microsoft/eslint-plugin-spfx": "1.15.2",
+    "@microsoft/rush-stack-compiler-4.5": "0.2.2",
     "@microsoft/sp-build-web": "1.15.0",
+    "@microsoft/sp-module-interfaces": "1.15.0",
+    "@rushstack/eslint-config": "2.5.1",
     "@types/webpack-env": "~1.15.2",
     "ajv": "^6.12.5",
-    "gulp": "4.0.2",
-    "@microsoft/sp-module-interfaces": "1.15.0"
+    "gulp": "4.0.2"
   }
 }

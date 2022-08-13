@@ -13,6 +13,8 @@ export interface IWebviewerWebPartProps {
   description: string;
 }
 
+console.log(process.env);
+
 export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWebPartProps> {
 
   private _isDarkTheme: boolean = false;
@@ -33,11 +35,10 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
 
   public render(): void {
     this.domElement.style.height = '1000px';
-
     WebViewer({
       // We suggest to use the method of uploading static files to the Documents folder in your sharepoint site
       // The provided path below is a template, it may varies in your site
-      path: 'https://<your-tenant-id>.sharepoint.com/sites/<your-site-name>/Shared Documents/<your-static-files-path>',
+      path: `https://${process.env.TENANT_ID}.sharepoint.com/sites/${process.env.SITE_NAME}/Shared Documents/${process.env.WEBVIEWER_LIB_FOLDER_PATH}`,
       // You'll need to indicate the entry point of webviewer ui. In sharepoint, it will be with .aspx extension.
       uiPath: './ui/index.aspx',
     }, this.domElement)
@@ -64,7 +65,7 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
   }
 
   private _createSaveFileButton(instance: WebViewerInstance): void {
-    const me = this;
+    const me: WebviewerWebPart = this;
     instance.UI.setHeaderItems(function(header: UI.Header) {
       const saveFileButton: unknown = {
         type: 'actionButton',
@@ -91,7 +92,7 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
   */
   private async _getFormDigestValue(): Promise<string> {
     try {
-      const resp: Response = await fetch(`${window.location.origin}/sites/<your-site-name>/_api/contextinfo`, {
+      const resp: Response = await fetch(`${window.location.origin}/sites/${process.env.SITE_NAME}/_api/contextinfo`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json; odata=verbose'
@@ -122,7 +123,7 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
     const file: File = new File([fileArray], fileName, {
       type: 'application/pdf'
     });
-    await fetch(`${window.location.origin}/sites/<your-site-name>/_api/web/GetFolderByServerRelativeUrl('${folderUrl}')/Files/add(url='${fileName}', overwrite=true)`, {
+    await fetch(`${window.location.origin}/sites/${process.env.SITE_NAME}/_api/web/GetFolderByServerRelativeUrl('${folderUrl}')/Files/add(url='${fileName}', overwrite=true)`, {
       method: 'POST',
       body: file,
       headers: {
