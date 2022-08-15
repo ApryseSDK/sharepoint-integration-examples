@@ -9,8 +9,8 @@ import {
 } from '@microsoft/sp-listview-extensibility';
 
 // These variables should be configured by the user's site
-const sharepointSiteUrl = 'https://5s4vrg.sharepoint.com/sites/5s4vrg';
-const sitePage = `Webviewer.aspx`;
+const sharepointSiteUrl = process.env.SHAREPOINT_SITE_URL;
+const sitePage = process.env.SITE_PAGE
 
 /**
  * If your command set uses the ClientSideComponentProperties JSON input,

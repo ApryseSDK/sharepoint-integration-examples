@@ -1,6 +1,10 @@
+Prequisite:
+1. Node.js version: 14.17.0
+2. npm version: 6.14.13
 # SharePoint-extension
-- change the `sharepointSiteUrl` to the your sharepoint site url, ex: https://{your-tenant-id}.sharepoint.com/sites/{site-name}
-- change the `page` to your SharePoint page that has webviewer
+- Create a `.env` file. Add two parameters: `SHAREPOINT_SITE_URL` and `SITE_PAGE` in the `.env` file.
+`SHAREPOINT_SITE_URL` is your sharepoint site url, ex: https://{your-tenant-id}.sharepoint.com/sites/{site-name}
+`SITE_PAGE` is your SharePoint page that has webviewer
 - run `gulp serve` and enable debug script.
 
 To deploy the extension to SharePoint, follow the steps below:
