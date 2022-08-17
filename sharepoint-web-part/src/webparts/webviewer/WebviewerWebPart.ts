@@ -13,14 +13,11 @@ export interface IWebviewerWebPartProps {
   description: string;
 }
 
-console.log(process.env);
-
 export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
-  // specify the sharepoint site here
-  private _sharepointSiteUrl: string = '';
+  private _mode: string;
   
   public validateQueryParam(urlParams: URLSearchParams): boolean {
     const necessaryParams: string[] = ['uniqueId', 'tempAuth', 'filename'];
@@ -43,11 +40,14 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
       uiPath: './ui/index.aspx',
     }, this.domElement)
     .then(instance => {
+      const { Feature } = instance.UI;
+      instance.UI.enableFeatures([Feature.FilePicker]);
       const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
       const validateQueryParamResult: boolean = this.validateQueryParam(urlParams);
       this._createSavedModal(instance);
       this._createSaveFileButton(instance);
       if (validateQueryParamResult) {
+        this._mode = "sharepoint-file";
         const uniqueId: string = urlParams.get("uniqueId");
         const tempAuth: string = urlParams.get("tempAuth");
         const filename: string = urlParams.get("filename");
@@ -58,7 +58,7 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
         const docUrl: string = `${domainUrl}/_layouts/15/download.aspx?UniqueId=${uniqueId}&Translate=false&tempauth=${tempAuth}&ApiVersion=2.0`;
         instance.UI.loadDocument(docUrl, {filename});
       } else {
-        alert('Please open the webviewer with proper document queries.')
+        this._mode = "local-file";
       }
     })
     .catch(err => console.error(err));
@@ -73,11 +73,17 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
         title: 'Save file to sharepoint',
         img: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>',
         onClick: async function() {
-          const searchparams: URLSearchParams = new URLSearchParams(window.location.search);
-          const folderName: string = searchparams.get('foldername');
-          const fileName: string = searchparams.get('filename');
           instance.UI.openElements(['loadingModal']);
-          await me.saveFile(instance, folderName, fileName);
+          if (me._mode === 'sharepoint-file') {
+            const searchparams: URLSearchParams = new URLSearchParams(window.location.search);
+            const folderName: string = searchparams.get('foldername');
+            const fileName: string = searchparams.get('filename');
+            await me.saveFile(instance, folderName, fileName);
+          } else if (me._mode === 'local-file') {
+            const fileName: string = await instance.Core.documentViewer.getDocument().getFilename();
+            const folderName: string = encodeURIComponent('Shared Documents');
+            await me.saveFile(instance, folderName, fileName);
+          }
           instance.UI.closeElements(['loadingModal']);
           instance.UI.openElements(['savedModal']);
         }
@@ -118,7 +124,6 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
     const xfdfString: string = await annotationManager.exportAnnotations();
     const fileData: ArrayBuffer = await instance.Core.documentViewer.getDocument().getFileData({ xfdfString });
     const digest: string = await this._getFormDigestValue();
-    
     const fileArray: Uint8Array= new Uint8Array(fileData);
     const file: File = new File([fileArray], fileName, {
       type: 'application/pdf'
