@@ -24,13 +24,10 @@ build.configureWebpack.mergeConfig({
         pluginDefine = plugin;
       }
     }
- 
     const currentEnv = getClientEnvironment().stringified;
-    console.log('currentEnv', currentEnv);
  
     if (pluginDefine) {
       pluginDefine.definitions = { ...pluginDefine.definitions, ...currentEnv };
-      console.log('pluginDefine', pluginDefine);
     } else {
       cfg.plugins.push(new webpack.DefinePlugin(currentEnv));
     }

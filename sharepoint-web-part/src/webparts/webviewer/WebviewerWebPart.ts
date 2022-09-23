@@ -81,7 +81,7 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
             await me.saveFile(instance, folderName, fileName);
           } else if (me._mode === 'local-file') {
             const fileName: string = await instance.Core.documentViewer.getDocument().getFilename();
-            const folderName: string = encodeURIComponent('Shared Documents');
+            const folderName: string = encodeURIComponent(process.env.FOLDER_URL);
             await me.saveFile(instance, folderName, fileName);
           }
           instance.UI.closeElements(['loadingModal']);

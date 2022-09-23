@@ -42,7 +42,7 @@ Click into the "js" folder and upload the webviewer `lib` folder to the `js` fol
 Now, the webviewer lib folder should be available from the url: `https://<your-tenant-id>.sharepoint.com/sites/<site-name>/Shared Documents/Webviewer/js/lib`.
 
 ## Web part Development
-Change the `"initialPage"` property in the `server.json` file in the `config` folder with your tenant id and site name.
+Change the `"initialPage"` property in the `serve.json` file in the `config` folder with your tenant id and site name.
 
 In the local `sharepoint-web-part` folder, we need to create a `.env` file and the following environment paramers are need in the `.env` file:
 ```

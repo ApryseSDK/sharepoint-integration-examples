@@ -10,7 +10,7 @@ import {
 
 // These variables should be configured by the user's site
 const sharepointSiteUrl = process.env.SHAREPOINT_SITE_URL;
-const sitePage = process.env.SITE_PAGE
+const sitePage = process.env.SITE_PAGE;
 
 /**
  * If your command set uses the ClientSideComponentProperties JSON input,
@@ -45,6 +45,7 @@ export default class PDFTronCommandSet extends BaseListViewCommandSet<IPDFTronCo
 
   @override
   public onExecute(event: IListViewCommandSetExecuteEventParameters): void {
+    console.log('on execute');
     const fileRef = event.selectedRows[0].getValueByName('FileRef');
     const fileName = event.selectedRows[0].getValueByName('FileLeafRef');
     const spItemUrl = event.selectedRows[0].getValueByName('.spItemUrl');
@@ -55,14 +56,20 @@ export default class PDFTronCommandSet extends BaseListViewCommandSet<IPDFTronCo
     switch (event.itemId) {
       case 'OPEN_IN_PDFTRON':
         axios.get(spItemUrl).then(({data}) => {
+          console.log('dev');
           const downloadUrl = data['@content.downloadUrl'];
           const url = new URL(downloadUrl);
           const urlParams =  new URLSearchParams(url.search);
           const uniqueId = urlParams.get('UniqueId');
           const tempAuth = urlParams.get('tempauth');
+
+          // If you're hosting SharePoint web part locally, the URL should be similar to
+          // window.open(`${sharepointSiteUrl}/_layouts/15/${sitePage}?filename=${fileName}&foldername=${folderName}&username=${displayName}&email=${email}&uniqueId=${uniqueId}&tempAuth=${tempAuth}`);
+
+          // If you have a SharePoint site page that already has the webviewer web parts, the URL should be similar to
           window.open(`${sharepointSiteUrl}/SitePages/${sitePage}?filename=${fileName}&foldername=${folderName}&username=${displayName}&email=${email}&uniqueId=${uniqueId}&tempAuth=${tempAuth}`);
           
-          // If you're using sharepoint-static, just copy the URL of your page and put into the following
+          // If you're using sharepoint-static, the URL should be similar to the following
 
           // let staticPageUrl = `https://{your-tenant-id}.sharepoint.com/sites/{site-name}/Shared%20Documents/{your-static-folder-path}`;
           // window.open(`${staticPageUrl}?filename=${fileName}&foldername=${folderName}&username=${displayName}&email=${email}&uniqueId=${uniqueId}&tempAuth=${tempAuth}`);
