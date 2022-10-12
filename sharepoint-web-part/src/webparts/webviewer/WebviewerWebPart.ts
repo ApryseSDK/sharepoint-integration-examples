@@ -9,6 +9,8 @@ import WebViewer, { Core, UI, WebViewerInstance } from '@pdftron/webviewer';
 
 import * as strings from 'WebviewerWebPartStrings';
 
+import GraphConsumer from './components/GraphConsumer';
+
 export interface IWebviewerWebPartProps {
   description: string;
 }
@@ -18,7 +20,8 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
   private _mode: string;
-  
+  private _graphConsumer: GraphConsumer;
+
   public validateQueryParam(urlParams: URLSearchParams): boolean {
     const necessaryParams: string[] = ['uniqueId', 'tempAuth', 'filename'];
     let result: boolean = true;
@@ -39,7 +42,16 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
       // You'll need to indicate the entry point of webviewer ui. In sharepoint, it will be with .aspx extension.
       uiPath: './ui/index.aspx',
     }, this.domElement)
-    .then(instance => {
+    .then(async instance => {
+	this._graphConsumer = new GraphConsumer(this.context);
+	await this._graphConsumer.GetCurrentUser();
+	await this._graphConsumer.ListUsers();
+	const userData: UI.MentionsManager.UserData[] = this._graphConsumer.users.map(s =>
+		({ value: s.displayName, email: s.mail }));
+	console.info(userData);
+	instance.UI.mentions.setUserData(userData);
+	instance.Core.annotationManager.setCurrentUser(this._graphConsumer.currentUser.displayName);
+
       const { Feature } = instance.UI;
       instance.UI.enableFeatures([Feature.FilePicker]);
       const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
