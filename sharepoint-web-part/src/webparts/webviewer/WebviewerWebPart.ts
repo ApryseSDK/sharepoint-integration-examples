@@ -23,7 +23,7 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
   private _graphConsumer: GraphConsumer;
 
   public validateQueryParam(urlParams: URLSearchParams): boolean {
-    const necessaryParams: string[] = ['uniqueId', 'tempAuth', 'filename'];
+    const necessaryParams: string[] = ['filename'];
     let result: boolean = true;
     necessaryParams.forEach(paramKey => {
       if (!urlParams.get(paramKey)) {
@@ -60,15 +60,11 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
       this._createSaveFileButton(instance);
       if (validateQueryParamResult) {
         this._mode = "sharepoint-file";
-        const uniqueId: string = urlParams.get("uniqueId");
-        const tempAuth: string = urlParams.get("tempAuth");
         const filename: string = urlParams.get("filename");
-        const newPathnameArray: string[] = window.location.pathname.split('/').slice(0, 3);
-        const newPathname: string = newPathnameArray.join('/');
-        const domain: string = window.location.origin;
-        const domainUrl: string = `${domain}${newPathname}`;
-        const docUrl: string = `${domainUrl}/_layouts/15/download.aspx?UniqueId=${uniqueId}&Translate=false&tempauth=${tempAuth}&ApiVersion=2.0`;
-        instance.UI.loadDocument(docUrl, {filename});
+		const folderName: string = urlParams.get("foldername");
+		const docURL: string = `${window.location.origin}/sites/${process.env.SITE_NAME}/_api/web/GetFolderByServerRelativeUrl('${folderName}')/Files(url='${filename}')/$value`;
+		
+		instance.UI.loadDocument(docURL, {filename});
       } else {
         this._mode = "local-file";
       }
