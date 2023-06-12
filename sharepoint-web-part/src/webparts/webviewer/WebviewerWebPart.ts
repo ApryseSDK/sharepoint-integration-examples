@@ -10,6 +10,7 @@ import WebViewer, { Core, UI, WebViewerInstance } from '@pdftron/webviewer';
 import * as strings from 'WebviewerWebPartStrings';
 
 import GraphConsumer from './components/GraphConsumer';
+import DataverseQueries from './components/DataverseQueries';
 
 export interface IWebviewerWebPartProps {
   description: string;
@@ -21,13 +22,17 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
   private _environmentMessage: string = '';
   private _mode: string;
   private _graphConsumer: GraphConsumer;
+  private _dataverseQueries: DataverseQueries
+  private _recordID: string = 'ceed5dc6-357a-ed11-81ad-00224826545c';
 
   public validateQueryParam(urlParams: URLSearchParams): boolean {
     const necessaryParams: string[] = ['filename'];
     let result: boolean = true;
+	console.log("Test ID:" + urlParams.get('uniqueID'));
+	this._recordID = urlParams.get('uniqueID');
     necessaryParams.forEach(paramKey => {
       if (!urlParams.get(paramKey)) {
-        result = false;
+        // result = false;
       }
     });
     return result;
@@ -43,9 +48,13 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
       uiPath: './ui/index.aspx',
     }, this.domElement)
     .then(async instance => {
+	const { documentViewer, annotationManager } = instance.Core;
 	this._graphConsumer = new GraphConsumer(this.context);
+	// this._dataverseQueries = new DataverseQueries(this.context);
+	// await this._dataverseQueries.Login();
 	await this._graphConsumer.GetCurrentUser();
 	await this._graphConsumer.ListUsers();
+
 	const userData: UI.MentionsManager.UserData[] = this._graphConsumer.users.map(s =>
 		({ value: s.displayName, email: s.mail }));
 	console.info(userData);
@@ -56,18 +65,81 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
       instance.UI.enableFeatures([Feature.FilePicker]);
       const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
       const validateQueryParamResult: boolean = this.validateQueryParam(urlParams);
+
+	  await this._graphConsumer.TestAPI(this._recordID);
+	  await this._graphConsumer.GetFileAPI(this._recordID);
+
       this._createSavedModal(instance);
       this._createSaveFileButton(instance);
       if (validateQueryParamResult) {
         this._mode = "sharepoint-file";
+        const uniqueId: string = urlParams.get("uniqueId");
+
+        const tempAuth: string = urlParams.get("tempAuth");
         const filename: string = urlParams.get("filename");
-		const folderName: string = urlParams.get("foldername");
-		const docURL: string = `${window.location.origin}/sites/${process.env.SITE_NAME}/_api/web/GetFolderByServerRelativeUrl('${folderName}')/Files(url='${filename}')/$value`;
-		
-		instance.UI.loadDocument(docURL, {filename});
+        const newPathnameArray: string[] = window.location.pathname.split('/').slice(0, 3);
+        const newPathname: string = newPathnameArray.join('/');
+        const domain: string = window.location.origin;
+        const domainUrl: string = `${domain}${newPathname}`;
+        const docUrl: string = `${domainUrl}/_layouts/15/download.aspx?UniqueId=${uniqueId}&Translate=false&tempauth=${tempAuth}&ApiVersion=2.0`;
+        // instance.UI.loadDocument(docUrl, {filename});
+
+		// Testing...
+		if (this._graphConsumer.testFile !== null)
+		{
+			instance.UI.loadDocument(this._graphConsumer.testFile);
+
+			documentViewer.addEventListener('annotationsLoaded', async () => {
+				console.log("Test" + this._graphConsumer.xfdf);
+				await annotationManager.importAnnotations(this._graphConsumer.xfdf);
+			})
+			
+		}
       } else {
         this._mode = "local-file";
+		if (this._graphConsumer.testFile !== null)
+		{
+			instance.UI.loadDocument(this._graphConsumer.testFile);
+
+			documentViewer.addEventListener('annotationsLoaded', async () => {
+				console.log("Test" + this._graphConsumer.xfdf);
+				await annotationManager.importAnnotations(this._graphConsumer.xfdf);
+			})
+			
+		}
       }
+
+	  instance.UI.mentions.on('mentionChanged', async (mentions, action) => {
+		if (action === 'add') {
+		  // a new mention was just added to a comment
+		  console.log("Mention Added");
+		//   await this._graphConsumer.PostSendEmail();
+		}
+  
+		if (action === 'modify') {
+		  // the mentioned names in a comment didn't change, but the surrounding text was changed
+		  console.log("Mention Modified");
+		}
+  
+		if (action === 'delete') {
+		  // a mention was just deleted from a comment
+		  console.log("Mention Deleted");
+		}
+  
+		console.log(mentions);
+		// [
+		// {
+		// value: 'John Doe',
+		// email: 'johndoe@gmail.com',
+		// annotId: '...', // the annotation to which the mention belongs to
+		// },
+		// {
+		// value: 'Jane Doe',
+		// email: 'janedoe@gmail.com'
+		// annotId: '...',
+		// },
+		// ]
+	  })
     })
     .catch(err => console.error(err));
   }
@@ -90,6 +162,7 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
           } else if (me._mode === 'local-file') {
             const fileName: string = await instance.Core.documentViewer.getDocument().getFilename();
             const folderName: string = encodeURIComponent(process.env.FOLDER_URL);
+
             await me.saveFile(instance, folderName, fileName);
           }
           instance.UI.closeElements(['loadingModal']);
@@ -128,14 +201,19 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
   }
 
   public async saveFile(instance: WebViewerInstance, folderUrl: string, fileName: string): Promise<void> {
+	console.log("Save File");
     const annotationManager: Core.AnnotationManager = instance.Core.annotationManager;
-    const xfdfString: string = await annotationManager.exportAnnotations();
+    const xfdfString: string = await annotationManager.exportAnnotations({ widgets: false});
+	console.log("XFDF Length:" + xfdfString.length);
     const fileData: ArrayBuffer = await instance.Core.documentViewer.getDocument().getFileData({ xfdfString });
     const digest: string = await this._getFormDigestValue();
     const fileArray: Uint8Array= new Uint8Array(fileData);
     const file: File = new File([fileArray], fileName, {
       type: 'application/pdf'
     });
+
+	await this._graphConsumer.SaveXFDF(xfdfString, this._recordID);
+
     await fetch(`${window.location.origin}/sites/${process.env.SITE_NAME}/_api/web/GetFolderByServerRelativeUrl('${folderUrl}')/Files/add(url='${fileName}', overwrite=true)`, {
       method: 'POST',
       body: file,

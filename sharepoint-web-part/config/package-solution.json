@@ -9,10 +9,18 @@
     "webApiPermissionRequests": [
 		{
 		  "resource": "Microsoft Graph",
-		  "scope": "User.ReadBasic.All"
+		  "scope": "User.Read"
 		},
 		{
 			"resource": "Microsoft Graph",
+			"scope": "User.ReadBasic.All"
+		},
+		{
+			"resource":"Dataverse",
+			"scope":"user_impersonation"
+		},
+		{
+			"resource": "Windows Azure Active Directory",
 			"scope": "User.Read"
 		}
 	  ],
