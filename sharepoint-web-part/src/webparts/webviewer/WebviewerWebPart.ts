@@ -35,22 +35,22 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
 
   public render(): void {
     this.domElement.style.height = '1000px';
+
     WebViewer({
       // We suggest to use the method of uploading static files to the Documents folder in your sharepoint site
       // The provided path below is a template, it may varies in your site
       path: `https://${process.env.TENANT_ID}.sharepoint.com/sites/${process.env.SITE_NAME}/Shared Documents/${process.env.WEBVIEWER_LIB_FOLDER_PATH}`,
-      // You'll need to indicate the entry point of webviewer ui. In sharepoint, it will be with .aspx extension.
-      uiPath: './ui/index.aspx',
+      initialDoc: 'https://pdftron.s3.amazonaws.com/downloads/pl/demo-annotated.pdf',
     }, this.domElement)
     .then(async instance => {
-	this._graphConsumer = new GraphConsumer(this.context);
-	await this._graphConsumer.GetCurrentUser();
-	await this._graphConsumer.ListUsers();
-	const userData: UI.MentionsManager.UserData[] = this._graphConsumer.users.map(s =>
-		({ value: s.displayName, email: s.mail }));
-	console.info(userData);
-	instance.UI.mentions.setUserData(userData);
-	instance.Core.annotationManager.setCurrentUser(this._graphConsumer.currentUser.displayName);
+      this._graphConsumer = new GraphConsumer(this.context);
+      await this._graphConsumer.GetCurrentUser();
+      await this._graphConsumer.ListUsers();
+      const userData: UI.MentionsManager.UserData[] = this._graphConsumer.users.map(s =>
+        ({ value: s.displayName, email: s.mail }));
+      console.info(userData);
+      instance.UI.mentions.setUserData(userData);
+      instance.Core.annotationManager.setCurrentUser(this._graphConsumer.currentUser.displayName);
 
       const { Feature } = instance.UI;
       instance.UI.enableFeatures([Feature.FilePicker]);
@@ -61,10 +61,10 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
       if (validateQueryParamResult) {
         this._mode = "sharepoint-file";
         const filename: string = urlParams.get("filename");
-		const folderName: string = urlParams.get("foldername");
-		const docURL: string = `${window.location.origin}/sites/${process.env.SITE_NAME}/_api/web/GetFolderByServerRelativeUrl('${folderName}')/Files(url='${filename}')/$value`;
+        const folderName: string = urlParams.get("foldername");
+        const docURL: string = `${window.location.origin}/sites/${process.env.SITE_NAME}/_api/web/GetFolderByServerRelativeUrl('${folderName}')/Files(url='${filename}')/$value`;
 		
-		instance.UI.loadDocument(docURL, {filename});
+		    instance.UI.loadDocument(docURL, {filename});
       } else {
         this._mode = "local-file";
       }
@@ -73,7 +73,6 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
   }
 
   private _createSaveFileButton(instance: WebViewerInstance): void {
-    const me: WebviewerWebPart = this;
     instance.UI.setHeaderItems(function(header: UI.Header) {
       const saveFileButton: unknown = {
         type: 'actionButton',
@@ -82,15 +81,15 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
         img: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>',
         onClick: async function() {
           instance.UI.openElements(['loadingModal']);
-          if (me._mode === 'sharepoint-file') {
+          if (this._mode === 'sharepoint-file') {
             const searchparams: URLSearchParams = new URLSearchParams(window.location.search);
             const folderName: string = searchparams.get('foldername');
             const fileName: string = searchparams.get('filename');
-            await me.saveFile(instance, folderName, fileName);
-          } else if (me._mode === 'local-file') {
+            await this.saveFile(instance, folderName, fileName);
+          } else if (this._mode === 'local-file') {
             const fileName: string = await instance.Core.documentViewer.getDocument().getFilename();
             const folderName: string = encodeURIComponent(process.env.FOLDER_URL);
-            await me.saveFile(instance, folderName, fileName);
+            await this.saveFile(instance, folderName, fileName);
           }
           instance.UI.closeElements(['loadingModal']);
           instance.UI.openElements(['savedModal']);
@@ -186,7 +185,7 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
 
 
   private _getEnvironmentMessage(): string {
-    if (!!this.context.sdks.microsoftTeams) { // running in Teams
+    if (this.context.sdks.microsoftTeams) { // running in Teams
       return this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
     }
 
