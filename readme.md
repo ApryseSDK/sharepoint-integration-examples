@@ -1,6 +1,7 @@
 Prequisite:
-1. Node.js version: 14.17.0
-2. npm version: 6.14.13
+1. Node.js version: 22.20.0
+2. npm version: 11.6.2
+3. Spfx: 1.21.1
 # SharePoint-extension
 - Create a `.env` file. Add two parameters: `SHAREPOINT_SITE_URL` and `SITE_PAGE` in the `.env` file.
 `SHAREPOINT_SITE_URL` is your sharepoint site url, ex: https://{your-tenant-id}.sharepoint.com/sites/{site-name}
