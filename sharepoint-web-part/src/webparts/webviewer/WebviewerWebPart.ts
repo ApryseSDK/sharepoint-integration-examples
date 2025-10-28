@@ -63,8 +63,8 @@ export default class WebviewerWebPart extends BaseClientSideWebPart<IWebviewerWe
         const filename: string = urlParams.get("filename");
         const folderName: string = urlParams.get("foldername");
         const docURL: string = `${window.location.origin}/sites/${process.env.SITE_NAME}/_api/web/GetFolderByServerRelativeUrl('${folderName}')/Files(url='${filename}')/$value`;
-		
-		    instance.UI.loadDocument(docURL, {filename});
+    
+        instance.UI.loadDocument(docURL, {filename});
       } else {
         this._mode = "local-file";
       }
